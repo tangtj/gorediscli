@@ -8,18 +8,6 @@ import (
 	"strings"
 )
 
-const CHAR_SPACE = ' '
-
-const CR = '\r'
-const LF = '\n'
-const CRLF = "\r\n"
-
-const SimpleString = '+'
-const Err = '-'
-const Number = ':'
-const Array = '*'
-const String = '$'
-
 var Nil = errors.New("nil")
 
 func GenByte(command []byte) [][]byte {
@@ -48,20 +36,20 @@ func GenByte(command []byte) [][]byte {
 func Convert2Command(bs []byte) []byte {
 	c := GenByte(bs)
 
-	b := make([]byte, 0)
+	b := make([]byte, 0, len(bs))
 	b = append(b, '*')
 
 	size := len(c)
 	b = append(b, []byte(strconv.Itoa(size))...)
-	b = append(b, '\r', '\n')
+	b = append(b, CR, LF)
 
 	for _, i2 := range c {
-		b = append(b, '$')
+		b = append(b, String)
 		size := len(i2)
 		b = append(b, []byte(strconv.Itoa(size))...)
-		b = append(b, '\r', '\n')
+		b = append(b, CR, LF)
 		b = append(b, i2...)
-		b = append(b, '\r', '\n')
+		b = append(b, CR, LF)
 	}
 	return b
 }
