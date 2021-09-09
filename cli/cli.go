@@ -10,7 +10,7 @@ import (
 
 var Nil = errors.New("nil")
 
-func GenByte(command []byte) [][]byte {
+func _convertCommand(command []byte) [][]byte {
 	args := make([][]byte, 0)
 
 	escape := false
@@ -33,8 +33,8 @@ func GenByte(command []byte) [][]byte {
 	return args
 }
 
-func Convert2Command(bs []byte) []byte {
-	c := GenByte(bs)
+func Command(bs []byte) []byte {
+	c := _convertCommand(bs)
 
 	b := make([]byte, 0, len(bs))
 	b = append(b, '*')

@@ -19,7 +19,7 @@ func main() {
 	for {
 		print("> ")
 		line, _, _ := reader.ReadLine()
-		line = cli.Convert2Command(line)
+		line = cli.Command(line)
 		c.Write(line)
 		r, _ := cli.Resp(c)
 		str, _ := json.Marshal(r)

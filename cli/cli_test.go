@@ -50,7 +50,7 @@ func TestGenByte(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := GenByte(tt.args.command); !reflect.DeepEqual(got, tt.want) {
+			if got := _convertCommand(tt.args.command); !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("GenRedisCommand() = %v, want %v", got, tt.want)
 			}
 		})
@@ -77,7 +77,7 @@ func TestConvertToCommand(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := ConvertToCommand(tt.args.bs); !reflect.DeepEqual(got, tt.want) {
+			if got := _convertCommand(tt.args.bs); !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("ConvertToCommand() = %v, want %v", got, tt.want)
 			}
 		})
