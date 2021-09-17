@@ -3,6 +3,7 @@ package cli
 import (
 	"bufio"
 	"errors"
+	"github.com/tangtj/gorediscli/command"
 	"io"
 	"strconv"
 	"strings"
@@ -10,53 +11,14 @@ import (
 
 var Nil = errors.New("nil")
 
-func _convertCommand(command []byte) [][]byte {
-	args := make([][]byte, 0)
-
-	escape := false
-	argsIndex := 0
-
-	args = append(args, []byte{})
-	for i, l := 0, len(command); i < l; i++ {
-		b := command[i]
-		if b == CHAR_SPACE && !escape {
-			argsIndex++
-			args = append(args, []byte{})
-			escape = false
-		} else {
-			if b == '"' || b == '\'' {
-				escape = true
-			}
-			args[argsIndex] = append(args[argsIndex], b)
-		}
-	}
-	return args
-}
-
 func Command(bs []byte) []byte {
-	c := _convertCommand(bs)
-
-	b := make([]byte, 0, len(bs))
-	b = append(b, '*')
-
-	size := len(c)
-	b = append(b, []byte(strconv.Itoa(size))...)
-	b = append(b, CR, LF)
-
-	for _, i2 := range c {
-		b = append(b, String)
-		size := len(i2)
-		b = append(b, []byte(strconv.Itoa(size))...)
-		b = append(b, CR, LF)
-		b = append(b, i2...)
-		b = append(b, CR, LF)
-	}
-	return b
+	c := command.FromInline(bs)
+	return c.Bytes()
 }
 
 func Resp(reader io.Reader) (interface{}, error) {
 	read := bufio.NewReader(reader)
-	r, _ := read.ReadString(LF)
+	r, _ := read.ReadString(command.LF)
 	result, _ := _resp(r, read)
 	return result, nil
 }
@@ -96,7 +58,7 @@ func _array(head string, reader *bufio.Reader) ([]interface{}, error) {
 	}
 	r := make([]interface{}, 0, size)
 	for i := 0; i < size; i++ {
-		s, _ := reader.ReadString(LF)
+		s, _ := reader.ReadString(command.LF)
 		resp, _ := _resp(s, reader)
 		r = append(r, resp)
 	}
@@ -107,15 +69,15 @@ func _array(head string, reader *bufio.Reader) ([]interface{}, error) {
 func _resp(head string, reader *bufio.Reader) (interface{}, error) {
 	c := head[0]
 	switch c {
-	case SimpleString:
+	case command.SimpleString:
 		return _simpleString(head, reader)
-	case Err:
+	case command.Err:
 		return _err(head, reader)
-	case Number:
+	case command.Number:
 		return _number(head, reader)
-	case Array:
+	case command.Array:
 		return _array(head, reader)
-	case String:
+	case command.String:
 		return _string(head, reader)
 	}
 	return nil, errors.New("unsupport operators")

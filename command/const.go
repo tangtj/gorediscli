@@ -1,6 +1,6 @@
-package cli
+package command
 
-const CHAR_SPACE = ' '
+const CharSpace = ' '
 
 const CR = '\r'
 const LF = '\n'
